@@ -1,0 +1,9 @@
+*
+!*/
+!.gitignore
+!.gitmodules
+!.gitkeep
+!Makefile
+!*.c
+!*.h
+g
