@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:16:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/02/27 17:40:23 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/02/28 15:48:51 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,16 @@ void	swap_lst(t_list **lst)
 	(*lst)-> content = first_content;
 }
 
-void	push_lst(t_list *lst_src, t_list **lst_dest)
+void	push_lst(t_list **lst_src, t_list **lst_dest)
 {
-	ft_lstadd_front(lst_dest, ft_lstnew(lst_src->content));
+	t_list	*lst_temp;
+
+	if (!(*lst_src) || ft_lstsize(*lst_src) < 1)
+		return ;
+	ft_lstadd_front(lst_dest, ft_lstnew((*lst_src)->content));
+	lst_temp = (*lst_src)->next;
+	ft_lstdelone(*lst_src, NULL);
+	*lst_src = lst_temp;
 }
 
 void	rotate_lst(t_list **lst)
@@ -64,17 +71,71 @@ void	reverse_rotate_lst(t_list **lst)
 	t_list	*last_elem;
 
 	temp_lst = *lst;
-	lst_size = ft_lstsize(*lst);
+	lst_size = ft_lstsize(temp_lst);
 	i = 0;
-	while (i < (lst_size - 1))
+	while (i < (lst_size - 2))
 	{
 		temp_lst = temp_lst->next;
 		i++;
 	}
-	temp_lst->next = NULL;
-	last_elem = ft_lstlast(*lst);
+	last_elem = ft_lstlast(temp_lst);
 	last_elem->next = *lst;
+	temp_lst->next = NULL;
 	*lst = last_elem;
+}
+
+void	order_three(t_list	*lst)
+{
+	int	top_number;
+	int	middle_number;
+	int	bottom_number;
+
+	top_number = *((int *)lst->content);
+	middle_number = *((int *)lst->next->content);
+	bottom_number = *((int *)lst->next->next->content);
+
+	if (top_number > middle_number && middle_number < bottom_number
+		&& bottom_number > top_number)
+		printf("sa\n");
+	else if (top_number > middle_number && middle_number > bottom_number
+		&& bottom_number < top_number)
+		printf("sa\nrra\n");
+	else if (top_number > middle_number && middle_number < bottom_number
+		&& bottom_number < top_number)
+		printf("ra\n");
+	else if (top_number < middle_number && middle_number > bottom_number
+		&& bottom_number > top_number)
+		printf("sa\nra\n");
+	else if (top_number < middle_number && middle_number > bottom_number
+		&& bottom_number < top_number)
+		printf("rra\n");
+}
+
+void	order_five(t_list	*lst)
+{
+	int	top_number;
+	int	middle_number;
+	int	bottom_number;
+
+	top_number = *((int *)lst->content);
+	middle_number = *((int *)lst->next->content);
+	bottom_number = *((int *)lst->next->next->content);
+
+	if (top_number > middle_number && middle_number < bottom_number
+		&& bottom_number > top_number)
+		printf("sa\n");
+	else if (top_number > middle_number && middle_number > bottom_number
+		&& bottom_number < top_number)
+		printf("sa\nrra\n");
+	else if (top_number > middle_number && middle_number < bottom_number
+		&& bottom_number < top_number)
+		printf("ra\n");
+	else if (top_number < middle_number && middle_number > bottom_number
+		&& bottom_number > top_number)
+		printf("sa\nra\n");
+	else if (top_number < middle_number && middle_number > bottom_number
+		&& bottom_number < top_number)
+		printf("rra\n");
 }
 
 int	main(void)
@@ -83,23 +144,20 @@ int	main(void)
 	int		num_1_a;
 	int		num_2_a;
 	int		num_3_a;
-	int		num_4_a;
+	/*int		num_4_a;
 	int		num_5_a;
 	t_list	*lst_b;
 	int		num_1_b;
-	int		num_2_b;
+	int		num_2_b;*/
 
-	num_1_a = 5;
-	num_2_a = 10;
-	num_3_a = 15;
-	num_4_a = 20;
-	num_5_a = 25;
+	num_1_a = 1;
+	num_2_a = 3;
+	num_3_a = 2;
 	lst_a = ft_lstnew(&num_1_a);
 	ft_lstadd_back(&lst_a, ft_lstnew(&num_2_a));
 	ft_lstadd_back(&lst_a, ft_lstnew(&num_3_a));
-	ft_lstadd_back(&lst_a, ft_lstnew(&num_4_a));
-	ft_lstadd_back(&lst_a, ft_lstnew(&num_5_a));
-	printf("Lst 1 content :\n");
+	order_three(lst_a);
+	/*printf("Lst 1 content :\n");
 	ft_lstiter(lst_a, print_content);
 	num_1_b = 15;
 	num_2_b = 20;
@@ -109,10 +167,10 @@ int	main(void)
 	ft_lstiter(lst_b, print_content);
 
 
-	reverse_rotate_lst(&lst_a);
+	push_lst(&lst_a, &lst_b);
 	printf("Lst 1 content :\n");
 	ft_lstiter(lst_a, print_content);
 	printf("Lst 2 content :\n");
-	ft_lstiter(lst_b, print_content);
+	ft_lstiter(lst_b, print_content);*/
 	//swap_lst(&lst);
 }
