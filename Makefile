@@ -6,7 +6,7 @@
 #    By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 15:13:41 by kjimenez          #+#    #+#              #
-#    Updated: 2023/02/27 15:25:06 by kjimenez         ###   ########.fr        #
+#    Updated: 2023/03/06 18:20:59 by kjimenez         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ DIR_OBJ		:= build
 
 NAME		:= $(DIR_BIN)/push_swap
 
-SRC			:= push_swap.c
+SRC			:= push_swap.c indexing.c markup.c markup_greater.c markup_index.c actions.c
 OBJ			:= $(addprefix $(DIR_OBJ)/,$(SRC:c=o))
 
 LIBS_PATH	:= libs
@@ -52,4 +52,4 @@ re: fclean $(NAME)
 
 .PHONY: all clean fclean re
 
-vpath %.c src
+vpath %.c src:src/markup
