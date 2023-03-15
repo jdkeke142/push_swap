@@ -6,13 +6,13 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:58:05 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/03/06 18:07:19 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/03/13 18:49:19 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "markup.h"
 
-static int	markup_by_index_next(t_indexed *lst, int last_kept, int markup)
+/*static int	markup_by_index_next(t_indexed *lst, int last_kept, int markup)
 {
 	int	start;
 	int	kept_amount;
@@ -62,4 +62,4 @@ t_markup	markup_by_index(t_indexed *lst, int lst_size, int markup)
 			markup);
 	kept_amount += markup_by_index_next(lst, last_kept, markup);
 	return ((t_markup){lst[markup].number, kept_amount});
-}
+}*/

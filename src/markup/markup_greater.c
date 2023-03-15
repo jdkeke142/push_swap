@@ -6,60 +6,58 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:46:55 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/03/06 18:07:23 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/03/15 19:29:12 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "markup.h"
 
-static int	markup_greater_than_next(t_indexed *lst, int last_kept, int markup)
+static void	markup_greater_than_populate(t_list **markup_lst,
+	t_list *markup_head, void (*lstadd)(t_list **, t_list *))
 {
-	int	start;
-	int	kept_amount;
-
-	kept_amount = 0;
-	start = markup - 1;
-	while (start >= 0)
-	{
-		if (lst[start].number > last_kept)
-		{
-			last_kept = lst[start].number;
-			kept_amount++;
-		}
-		start--;
-	}
-	return (kept_amount);
-}
-
-static int	markup_greater_than_prev(t_indexed *lst, int lst_size,
-	int last_kept, int markup)
-{
-	int	start;
-	int	kept_amount;
-
-	kept_amount = 0;
-	start = markup + 1;
-	while (start <= lst_size - 1)
-	{
-		if (lst[start].number > last_kept)
-		{
-			last_kept = lst[start].number;
-			kept_amount++;
-		}
-		start++;
-	}
-	return (kept_amount);
-}
-
-t_markup	markup_greater_than(t_indexed *lst, int lst_size, int markup)
-{
-	int			kept_amount;
+	t_list		*markup_head_cpy;
 	int			last_kept;
+	t_markup	*markup;
 
-	kept_amount = 1;
-	last_kept = lst[markup].number;
-	kept_amount += markup_greater_than_prev(lst, lst_size, last_kept,
-			markup);
-	kept_amount += markup_greater_than_next(lst, last_kept, markup);
-	return ((t_markup){lst[markup].number, kept_amount});
+	markup_head_cpy = markup_head;
+	last_kept = ((t_indexed *)markup_head_cpy->content)->number;
+	markup_head_cpy = markup_head_cpy->next;
+	while (markup_head_cpy)
+	{
+		markup = malloc(sizeof(t_markup));
+		markup->number = ((t_indexed *)markup_head_cpy->content)->number;
+		if (markup->number > last_kept)
+		{
+			markup->keep = 1;
+			last_kept = markup->number;
+		}
+		else
+			markup->keep = 0;
+		lstadd(markup_lst, ft_lstnew(markup));
+		markup_head_cpy = markup_head_cpy->next;
+	}
+}
+
+t_list	*markup_greater_than(t_list *indexed_lst, t_list *markup_head)
+{
+	t_list	*reversed_lst;
+	t_list	*reversed_markup_head;
+	t_list	*indexed_lst_cpy;
+	t_list	*markup_lst;
+
+	reversed_lst = NULL;
+	indexed_lst_cpy = indexed_lst;
+	markup_lst = NULL;
+	while (indexed_lst_cpy)
+	{
+		ft_lstadd_front(&reversed_lst, ft_lstnew(indexed_lst_cpy->content));
+		if (indexed_lst_cpy == markup_head)
+			reversed_markup_head = reversed_lst;
+		indexed_lst_cpy = indexed_lst_cpy->next;
+	}
+	ft_lstadd_front(&markup_lst, ft_lstnew(markup_head->content));
+	markup_greater_than_populate(&markup_lst, markup_head, ft_lstadd_back);
+	markup_greater_than_populate(&markup_lst, reversed_markup_head,
+		ft_lstadd_front);
+	return (markup_lst);
 }

@@ -6,7 +6,7 @@
 #    By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 15:13:41 by kjimenez          #+#    #+#              #
-#    Updated: 2023/03/06 18:20:59 by kjimenez         ###   ########.fr        #
+#    Updated: 2023/03/15 17:50:04 by kjimenez         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ LIBS_PATH	:= libs
 LIBFT_PATH	:= $(LIBS_PATH)/libft
 
 CC			:= clang
-CFLAGS		:= -Wall -Wextra -Werror -I$(LIBFT_PATH)/include -Iinclude -Ofast
+CFLAGS		:= -Wall -Wextra -Werror -I$(LIBFT_PATH)/include -Iinclude
 LDFLAGS		:= -L$(LIBFT_PATH)/bin -lft_list -lXext -lX11 -lm -lz
 
 GIT			:= git

@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:16:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/03/06 18:20:48 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/03/15 19:29:02 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,21 @@
 #include "indexing.h"
 #include <stdio.h>
 
-void	print_content(void *content)
+/*
+Plan : markup is a struct number and boolean keep
+we can get a list of markup using any markup head and a list with INDEXED numbers
+*/
+static void	print_content(void *content)
 {
-	int	number;
+	t_markup	markup;
 
-	number = *((int *)content);
-	printf("Number is : %d\n", number);
+	markup = *((t_markup *)content);
+	printf("Number is : %d Keep ? : %d\n", markup.number, markup.keep);
 }
 
 int	main(void)
 {
-	int			test_array[7];
+	/*int			test_array[7];
 	int			list_size;
 	t_markup	markup_index_head;
 	t_markup	markup_greater_head;
@@ -40,11 +44,47 @@ int	main(void)
 	test_array[5] = 210815;
 	test_array[6] = 121;
 
-	list_size = 7;
+	list_size = 7;*/
 
-	indexed_lst = get_indexed_list(test_array, list_size);
+	t_list	*stack_a;
+	t_list	*stack_b;
+	t_list	*markup_lst;
 
-	markup_index_head = get_markup_head(MARKUP_BY_INDEX, indexed_lst, list_size);
+	int num1 = -2147483648;
+	int num2 = 2100;
+	int num3 = 220010;
+	int num4 = -1;
+	int	num5 = 7;
+	int	num6 = 210815;
+	int	num7 = 121;
+
+	stack_a = NULL;
+	ft_lstadd_back(&stack_a, ft_lstnew(&num1));
+	ft_lstadd_back(&stack_a, ft_lstnew(&num2));
+	ft_lstadd_back(&stack_a, ft_lstnew(&num3));
+	ft_lstadd_back(&stack_a, ft_lstnew(&num4));
+	ft_lstadd_back(&stack_a, ft_lstnew(&num5));
+	ft_lstadd_back(&stack_a, ft_lstnew(&num6));
+	ft_lstadd_back(&stack_a, ft_lstnew(&num7));
+
+	stack_b = get_indexed_list(stack_a, ft_lstsize(stack_a));
+
+	markup_lst = markup_greater_than(stack_b, stack_b->next->next->next);
+	ft_lstiter(markup_lst, print_content);
+	//ft_lstiter(stack_a, print_content2);
+	//(void) stack_b;
+	//ft_lstiter(stack_b, print_content);
+
+	/*stack_b = ft_lstcpy(stack_a);
+	ft_lstsort(&stack_b, ft_lstsize(stack_b));
+
+	printf("Lst a content :\n");
+	ft_lstiter(stack_a, print_content);
+
+	printf("Lst b content :\n");
+	ft_lstiter(stack_b, print_content);*/
+
+	/*markup_index_head = get_markup_head(MARKUP_BY_INDEX, indexed_lst, list_size);
 	printf("Markup head by index is %d and kept %d\n", markup_index_head.markup, markup_index_head.kept_amount);
 
 	markup_greater_head = get_markup_head(MARKUP_GREATER_THAN, indexed_lst, list_size);
@@ -67,5 +107,5 @@ int	main(void)
 	printf("Lst 2 content :\n");
 	ft_lstiter(stack_b, print_content);
 
-	//swap_lst(&lst);
+	swap_lst(&lst);*/
 }
