@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 18:04:31 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/03/16 20:23:36 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/12 17:55:30 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,15 @@ t_list	*find_markup_head(t_list *indexed_lst, t_markup_mode markup_mode)
 	{
 		markup_lst = get_markup(indexed_lst, indexed_lst_cpy, markup_mode);
 		keep_count = count_markup_keep(markup_lst);
-		if (keep_count > last_keep_count)
+		if (markup_head != NULL && keep_count == last_keep_count)
+		{
+			t_indexed *markup_head_content = (t_indexed *) markup_head->content;
+			t_indexed *indexed_lst_content = (t_indexed *) indexed_lst_cpy->content;
+
+			if (indexed_lst_content->index < markup_head_content->index)
+				markup_head = indexed_lst_cpy;
+		}
+		else if (keep_count > last_keep_count)
 		{
 			markup_head = indexed_lst_cpy;
 			last_keep_count = keep_count;

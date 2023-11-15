@@ -6,43 +6,23 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:16:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/03/24 05:02:36 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/15 23:27:09 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_list.h"
+#include "ft_stdio.h"
 #include "actions.h"
 #include "markup.h"
 #include "indexing.h"
 #include <stdio.h>
 
-/*
-Plan : markup is a struct number and boolean keep
-we can get a list of markup using any markup head and a list with INDEXED numbers
-*/
-/*static void	print_content(void *content)
-{
-	t_indexed	indexed;
-
-	indexed = *((t_indexed *) content);
-	printf("Number is : %d Index : %d\n", indexed.number, indexed.index);
-}*/
-
-static void	print_content2(void *content)
-{
-	t_markup	markup;
-
-	markup = *((t_markup *) content);
-	printf("Number is : %d Keep : %d\n", markup.number, markup.keep);
-}
-
-/*static void	print_content2(void *content)
-{
-	t_indexed	markup;
-
-	markup = *((t_indexed *)content);
-	printf("Number is : %d Index : %d\n", markup.number, markup.index);
-}*/
+//Parts: Solve function that returns a list of actions without modifying the passed list
+//- Indexing
+//- From stack A to stack B
+//- From stack B to stack A
+//- Align stack A
+//- Simply stack A
 
 static int	sa_needed(t_list *stack_a_indexed, t_list *markup_head, t_markup_mode mode)
 {
@@ -52,465 +32,652 @@ static int	sa_needed(t_list *stack_a_indexed, t_list *markup_head, t_markup_mode
 
 	stack_a_markup = get_markup(stack_a_indexed, markup_head, mode);
 	keep_without_swap = count_markup_keep(stack_a_markup);
-	swap_lst(&stack_a_markup);
+	swap_lst(&stack_a_indexed);
 	stack_a_markup = get_markup(stack_a_indexed, markup_head, mode);
 	keep_swap = count_markup_keep(stack_a_markup);
-	swap_lst(&stack_a_markup);
+	//printf("Keep without swap: %d, Keep with swapp : %d\n", keep_without_swap, keep_swap);
+	swap_lst(&stack_a_indexed);
 	free(stack_a_markup);
 	return (keep_swap > keep_without_swap);
 }
 
-
-typedef enum e_direction
+typedef struct s_stack_a
 {
-	DIR_REGULAR,
-	DIR_REVERSE
-}			t_direction;
+	t_list	*indexed;
+	t_list	*markup;
+	t_list	*markup_head;
+}				t_stack_a;
+
+t_stack_a	*stack_a_new(void)
+{
+	t_stack_a	*stack_a;
+
+	stack_a = malloc(sizeof(t_stack_a));
+	if (!stack_a)
+		return (NULL);
+	return (stack_a);
+}
+
+typedef enum e_action
+{
+	ACT_SWAP,
+	ACT_ROTATE,
+	ACT_REVERSE_ROTATE,
+	ACT_PUSH
+}			t_action;
+
+typedef enum e_stack
+{
+	STACK_A,
+	STACK_B,
+	STACK_BOTH
+}			t_stack;
 
 typedef struct s_move
 {
-	int			count;
-	t_direction	direction;
+	t_stack		stack;
+	t_action	action;
 }				t_move;
 
-
-t_move	count_sb(t_list *number, t_list *indexed_lst)
+static void	print_content2(void *content)
 {
-	int		lst_size;
-	int		half_size;
-	int		i;
-	t_list	*temp_lst;
+	t_move	*move;
 
-	lst_size = ft_lstsize(indexed_lst);
-	half_size = lst_size / 2;
-	temp_lst = indexed_lst;
-	i = 0;
-	while (temp_lst)
-	{
-		if (number == temp_lst)
-		{
-			if (i > half_size)
-				return ((t_move){i-half_size, DIR_REVERSE});
-			else
-				return ((t_move){i, DIR_REGULAR});
-		}
-		temp_lst = temp_lst->next;
-		i++;
-	}
-	return ((t_move){0, DIR_REGULAR});
+	move = (t_move *) content;
+	printf("Move stack : %d action : %d\n", move->stack, move->action);
 }
 
-t_move count_sa(t_list *number, t_list *indexed_lst)
+static void	print_content3(void *content)
 {
-	int		num_index;
-	int		curr_index;
-	int		curr_index2;
-	t_list	*temp_lst;
-	t_list	*lower_bigger_num;
+	t_markup	markup;
 
-	curr_index2 = 999999;
-	temp_lst = indexed_lst;
-	num_index = ((t_indexed *) number->content)->index;
-	while (temp_lst)
-	{
-		curr_index = ((t_indexed *) temp_lst->content)->index;
-		if (curr_index > num_index && curr_index < curr_index2)
-		{
-			lower_bigger_num = temp_lst;
-			curr_index2 = curr_index;
-		}
-		temp_lst = temp_lst->next;
-	}
-
-	return (count_sb(lower_bigger_num, indexed_lst));
+	markup = *((t_markup *) content);
+	printf("Number is : %d Keep : %d\n", markup.number, markup.keep);
 }
 
-void prepare_a(t_list **indexed_lst, t_move move)
-{
-	int	i;
 
-	i = 0;
-	while (i < move.count)
+t_list	*lstcpy(t_list	*lst)
+{
+	t_list	*new_lst;
+
+	if (lst == NULL)
+		return (NULL);
+	new_lst = malloc(sizeof(t_list));
+	new_lst->content = lst->content;
+	new_lst->next = lstcpy(lst->next);
+	return (new_lst);
+}
+
+
+t_move	*move_new(t_stack stack, t_action action)
+{
+	t_move	*move;
+
+	move = malloc(sizeof(t_move));
+	if (!move)
+		return (NULL);
+	move->stack = stack;
+	move->action = action;
+	return (move);
+}
+
+static void	stack_a_to_stack_b(t_stack_a *stack_a, t_list **stack_b_markup,
+	t_list **moves, t_markup_mode markup_mode)
+{
+	t_markup	*stack_a_first_elem;
+
+	while (count_markup_keep(stack_a->markup) != ft_lstsize(stack_a->markup))
 	{
-		if (move.direction == DIR_REGULAR)
+		stack_a_first_elem = stack_a->markup->content;
+		if (sa_needed(stack_a->indexed, stack_a->markup_head, markup_mode))
 		{
-			rotate_lst(indexed_lst);
-			printf("ra\n");
+			swap_lst(&stack_a->markup);
+			swap_lst(&stack_a->indexed);
+			ft_lstadd_back(moves, ft_lstnew(move_new(STACK_A, ACT_SWAP)));
+			stack_a->markup_head = get_markup(stack_a->indexed,
+					stack_a->markup_head, markup_mode);
+		}
+		else if (stack_a_first_elem->keep == 0)
+		{
+			push_lst(&stack_a->markup, stack_b_markup);
+			ft_lstadd_back(moves, ft_lstnew(move_new(STACK_A, ACT_PUSH)));
 		}
 		else
 		{
-			reverse_rotate_lst(indexed_lst);
-			printf("rra\n");
+			rotate_lst(&stack_a->markup);
+			rotate_lst(&stack_a->indexed);
+			ft_lstadd_back(moves, ft_lstnew(move_new(STACK_A, ACT_ROTATE)));
 		}
-		i++;
 	}
 }
 
-void prepare_b(t_list **indexed_lst, t_move move)
+typedef struct s_stack_a_boundaries
 {
-	int	i;
+	int	lowest_value;
+	int	highest_value;
+}				t_stack_a_boundaries;
+
+t_stack_a_boundaries	*stack_a_boundaries_new(int lowest_value,
+	int highest_value)
+{
+	t_stack_a_boundaries	*boundaries;
+
+	boundaries = malloc(sizeof(t_stack_a_boundaries));
+	if (!boundaries)
+		return (NULL);
+	boundaries->lowest_value = lowest_value;
+	boundaries->highest_value = highest_value;
+	return (boundaries);
+}
+
+static t_stack_a_boundaries	*get_stack_a_boundaries(t_list *stack_a_markup)
+{
+	t_stack_a_boundaries	*boundaries;
+	t_list					*stack_a_markup_cpy;
+	t_markup				*stack_a_markup_casted;
+
+	stack_a_markup_cpy = stack_a_markup;
+	stack_a_markup_casted = (t_markup *) stack_a_markup_cpy->content;
+	boundaries = stack_a_boundaries_new(stack_a_markup_casted->number,
+			stack_a_markup_casted->number);
+	while (stack_a_markup_cpy)
+	{
+		stack_a_markup_casted = (t_markup *) stack_a_markup_cpy->content;
+		if (stack_a_markup_casted->number < boundaries->lowest_value)
+			boundaries->lowest_value = stack_a_markup_casted->number;
+		if (stack_a_markup_casted->number > boundaries->highest_value)
+			boundaries->highest_value = stack_a_markup_casted->number;
+		stack_a_markup_cpy = stack_a_markup_cpy->next;
+	}
+	return (boundaries);
+}
+
+static void	apply_moveset(t_stack stack, int count, t_action action,
+	t_list **moveset)
+{
+	while (count > 0)
+	{
+		ft_lstadd_back(moveset, ft_lstnew(move_new(stack, action)));
+		count--;
+	}
+}
+
+static void	prepare_stack_b(t_list *stack_b_markup, int stack_b_curr_size,
+	t_list **moveset)
+{
+	int			move_count;
+	int			stack_b_total_size;
+
+	move_count = 0;
+	stack_b_total_size = ft_lstsize(stack_b_markup);
+	if (stack_b_curr_size + 1 <= stack_b_total_size / 2)
+	{
+		move_count = stack_b_curr_size;
+		apply_moveset(STACK_B, move_count, ACT_ROTATE, moveset);
+	}
+	else if (stack_b_curr_size > 0)
+	{
+		move_count = stack_b_total_size - stack_b_curr_size;
+		apply_moveset(STACK_B, move_count, ACT_REVERSE_ROTATE, moveset);
+	}
+}
+
+static void	prepare_stack_a_out(t_list	*stack_a_markup,
+	t_stack_a_boundaries	*stack_a_boundaries, t_list **moveset)
+{
+	int			count;
+	t_markup	*stack_a_markup_casted;
+	t_list		*stack_a_markup_cpy;
+	t_list		*stack_a_markup_cpy_rev;
+
+	count = 0;
+	stack_a_markup_cpy = lstcpy(stack_a_markup);
+	stack_a_markup_cpy_rev = lstcpy(stack_a_markup);
+	while (1)
+	{
+		stack_a_markup_casted = (t_markup *) stack_a_markup_cpy->content;
+		if (stack_a_markup_casted->number == stack_a_boundaries->lowest_value)
+		{
+			apply_moveset(STACK_A, count, ACT_ROTATE, moveset);
+			break ;
+		}
+		stack_a_markup_casted = (t_markup *) stack_a_markup_cpy_rev->content;
+		if (stack_a_markup_casted->number == stack_a_boundaries->lowest_value)
+		{
+			apply_moveset(STACK_A, count, ACT_REVERSE_ROTATE, moveset);
+			break ;
+		}
+		rotate_lst(&stack_a_markup_cpy);
+		reverse_rotate_lst(&stack_a_markup_cpy_rev);
+		count++;
+	}
+	free(stack_a_markup_cpy);
+	free(stack_a_markup_cpy_rev);
+}
+
+static int	is_between_stack_a(t_list	*stack_a_markup, t_markup	*markup)
+{
+	t_markup	*stack_a_markup_casted;
+	t_markup	*stack_a_markup_last_casted;
+
+	stack_a_markup_casted = (t_markup *) stack_a_markup->content;
+	stack_a_markup_last_casted = (t_markup *)
+		ft_lstlast(stack_a_markup)->content;
+	if (markup->number < stack_a_markup_casted->number
+		&& markup->number > stack_a_markup_last_casted->number)
+		return (1);
+	return (0);
+}
+
+static void	prepare_stack_a_in(t_list	*stack_a_markup, t_markup	*markup,
+	t_list **moveset)
+{
+	int			count;
+	t_list		*stack_a_markup_cpy;
+	t_list		*stack_a_markup_cpy_rev;
+
+	count = 0;
+	stack_a_markup_cpy = lstcpy(stack_a_markup);
+	stack_a_markup_cpy_rev = lstcpy(stack_a_markup);
+	while (1)
+	{
+		if (is_between_stack_a(stack_a_markup_cpy, markup))
+		{
+			apply_moveset(STACK_A, count, ACT_ROTATE, moveset);
+			break ;
+		}
+		if (is_between_stack_a(stack_a_markup_cpy_rev, markup))
+		{
+			apply_moveset(STACK_A, count, ACT_REVERSE_ROTATE, moveset);
+			break ;
+		}
+		rotate_lst(&stack_a_markup_cpy);
+		reverse_rotate_lst(&stack_a_markup_cpy_rev);
+		count++;
+	}
+	free(stack_a_markup_cpy);
+	free(stack_a_markup_cpy_rev);
+}
+
+//Convert the list to an array
+//Where in stack A is the smaller element that is the closest to the value from B ?
+//If found:
+  //Is this element closer to the start or the end of stack A ?
+  //The distance from the start or the end is the number of rotate or reverse rotate to do
+//Else
+  //Is the smallest element of stack A closer to the start or thend ?
+  //The distance from the start or the end is the number of rotate or reverse rotate to do
+
+static void	prepare_stack_a_fast(t_list *stack_a_markup, t_markup	*markup,
+	t_stack_a_boundaries	*stack_a_boundaries, t_list **moveset)
+{
+	int			i;
+	t_list		*stack_a_markup_cpy;
+	t_markup	*stack_a_arr;
+	int			stack_a_size;
 
 	i = 0;
-	while (i < move.count)
+	stack_a_markup_cpy = stack_a_markup;
+	stack_a_size = ft_lstsize(stack_a_markup);
+	stack_a_arr = malloc(stack_a_size * sizeof(t_markup));
+	while (stack_a_markup_cpy)
 	{
-		if (move.direction == DIR_REGULAR)
-		{
-			rotate_lst(indexed_lst);
-			printf("rb\n");
-		}
-		else
-		{
-			reverse_rotate_lst(indexed_lst);
-			printf("rrb\n");
-		}
+		stack_a_arr[i] = *((t_markup *) stack_a_markup_cpy->content);
+		stack_a_markup_cpy = stack_a_markup_cpy->next;
 		i++;
 	}
-}
 
-//Divide
-//We need to find : - Which bigger value is closest to the top in move ?
-//					- Which smaller value is closest to the bottom in move ?
-//FIRST = NEED TO BE BIGGER
-//LAST = NEED TO BE SMALLER
-/*e
-If first value of Stack A = smallest value of Stack A, rotate Stack A until first value of the stack
-is bigger than the value we are going to move from Stack B OR until last value of Stack A is smaller than the value we are going to move from Stack B
-
-ELSE
-
-Rotate Stack A until value we are going to move from Stack B is bigger than first value of stack A and
-smaller than last value of stack A
-*/
-
-t_list	*find_smallest(t_list *index_lst)
-{
-	t_list	*tmp_lst;
-	t_list	*smallest_value;
-	int		curr_number;
-	int		smallest_number;
-
-	tmp_lst = index_lst;
-	smallest_value = NULL;
-	while (tmp_lst)
+	if (markup->number > stack_a_boundaries->highest_value
+		|| markup->number < stack_a_boundaries->lowest_value)
 	{
-		curr_number = ((t_indexed *)(tmp_lst->content))->number;
-		if (smallest_value != NULL)
-			smallest_number = ((t_indexed *)(smallest_value->content))->number;
-		if (smallest_value == NULL || curr_number < smallest_number)
-			smallest_value = tmp_lst;
-		tmp_lst = tmp_lst->next;
+		prepare_stack_a_out(stack_a_markup, stack_a_boundaries, moveset);
 	}
-	return (smallest_value);
-}
-
-t_move count_for_top(t_list *number, t_list *indexed_lst)
-{
-	int		lst_size;
-	int		half_size;
-	int		i;
-	t_list	*temp_lst;
-
-	lst_size = ft_lstsize(indexed_lst);
-	half_size = lst_size / 2;
-	temp_lst = indexed_lst;
-	i = 0;
-	while (temp_lst)
+	else
 	{
-		if (number == temp_lst)
+		i = 0;
+		int closest_number = stack_a_boundaries->highest_value + 1;
+		int closest_index = 0;
+		while (i < stack_a_size)
 		{
-			if (i > half_size)
-				return ((t_move){i - half_size, DIR_REVERSE});
-			else
-				return ((t_move){i, DIR_REGULAR});
-		}
-		temp_lst = temp_lst->next;
-		i++;
-	}
-	return ((t_move){0, DIR_REGULAR});
-}
-
-t_move count_for_bottom(t_list *number, t_list *indexed_lst)
-{
-	int		lst_size;
-	int		half_size;
-	int		i;
-	t_list	*temp_lst;
-
-	lst_size = ft_lstsize(indexed_lst);
-	half_size = lst_size / 2;
-	temp_lst = indexed_lst;
-	i = 0;
-	while (temp_lst)
-	{
-		if (number == temp_lst)
-		{
-			if (i > half_size)
-				return ((t_move){(ft_lstsize(indexed_lst) - 1) - i,
-					DIR_REVERSE});
-			else
-				return ((t_move){i + 1, DIR_REGULAR});
-		}
-		temp_lst = temp_lst->next;
-		i++;
-	}
-	return ((t_move){0, DIR_REGULAR});
-}
-
-void	best_move(t_list *indexed_lst)
-{
-		int 	count;
-		t_list *temp_lst;
-		t_move	move_sb;
-		t_move	move_sa;
-
-		temp_lst = indexed_lst;
-		while (temp_lst)
-		{
-			if (count_for_top(temp_lst, indexed_lst).count > count_for_bottom(temp_lst, indexed_lst).count)
-				count = count_sb(temp_lst, indexed_lst).count + count_for_bottom(temp_lst, indexed_lst).count;
-			else
-				count = count_sb(temp_lst, indexed_lst).count + count_for_top(temp_lst, indexed_lst).count;
-			if (count < move_sa.count + move_sb.count)
+			t_markup markup2 = stack_a_arr[i];
+			if (markup2.number > markup->number && markup2.number < closest_number)
 			{
-				move_sb = count_sb(temp_lst, indexed_lst);
-				move_sa =  count_sa(temp_lst, indexed_lst);
+				closest_number = markup2.number;
+				closest_index = i;
 			}
-			temp_lst = temp_lst->next;
+			i++;
 		}
-
-		prepare_b(&indexed_lst, move_sb);
-		prepare_a(&indexed_lst, move_sa);
+		int move_count = 0;
+		if (closest_index + 1 <= stack_a_size / 2)
+		{
+			move_count = closest_index;
+			apply_moveset(STACK_A, move_count, ACT_ROTATE, moveset);
+		}
+		else if (closest_index > 0)
+		{
+			move_count = stack_a_size - closest_index;
+			apply_moveset(STACK_A, move_count, ACT_REVERSE_ROTATE, moveset);
+		}
+	}
 }
 
-int	main(void)
+static void	prepare_stack_a(t_list *stack_a_markup, t_markup	*markup,
+	t_stack_a_boundaries	*stack_a_boundaries, t_list **moveset)
 {
-	//(void) sa_needed;
-	t_list	*stack_a;
-	t_list	*stack_a_indexed;
-	t_list	*stack_a_markup;
-	t_list	*stack_b;
-	t_list	*markup_lst;
-	t_list	*stack_a_markup_head;
-	t_list	*stack_b_indexed;
-	t_list	*stack_b_markup;
+	if (markup->number > stack_a_boundaries->highest_value
+		|| markup->number < stack_a_boundaries->lowest_value)
+		prepare_stack_a_out(stack_a_markup, stack_a_boundaries, moveset);
+	else
+		prepare_stack_a_in(stack_a_markup, markup, moveset);
+}
 
-	int num1 = -2147483648;
-	int num2 = 2100;
-	int num3 = 220010;
-	int num4 = -1;
-	int	num5 = 7;
-	int	num6 = 210815;
-	int	num7 = 121;
+static t_list	*find_best_moveset(t_list	*stack_a_markup,
+	t_list *stack_b_markup, t_stack_a_boundaries	*stack_a_boundaries)
+{
+	t_list		*stack_b_markup_cpy;
+	t_markup	*markup;
+	t_list		*moveset;
+	t_list		*best_moveset;
+	int			stack_b_curr_size;
 
-	stack_a = NULL;
-	ft_lstadd_back(&stack_a, ft_lstnew(&num1));
-	ft_lstadd_back(&stack_a, ft_lstnew(&num2));
-	ft_lstadd_back(&stack_a, ft_lstnew(&num3));
-	ft_lstadd_back(&stack_a, ft_lstnew(&num4));
-	ft_lstadd_back(&stack_a, ft_lstnew(&num5));
-	ft_lstadd_back(&stack_a, ft_lstnew(&num6));
-	ft_lstadd_back(&stack_a, ft_lstnew(&num7));
-	stack_b = NULL;
-	stack_b_indexed = NULL;
+	stack_b_markup_cpy = stack_b_markup;
+	stack_b_curr_size = 0;
+	best_moveset = NULL;
+	while (stack_b_markup_cpy)
+	{
+		moveset = NULL;
+		markup = (t_markup *) stack_b_markup_cpy->content;
+		prepare_stack_b(stack_b_markup, stack_b_curr_size, &moveset);
+		(void) prepare_stack_a;
+		//prepare_stack_a(stack_a_markup, markup, stack_a_boundaries, &moveset);
+		(void) prepare_stack_a_fast;
+		prepare_stack_a_fast(stack_a_markup, markup, stack_a_boundaries, &moveset);
+		if (best_moveset == NULL
+			|| ft_lstsize(moveset) < ft_lstsize(best_moveset))
+		{
+			free(best_moveset);
+			best_moveset = moveset;
+		}
+		stack_b_markup_cpy = stack_b_markup_cpy->next;
+		stack_b_curr_size++;
+	}
+	return (best_moveset);
+}
+
+static void	prepare_both_stack(t_list	**stack_a_markup,
+	t_list **stack_b_markup, t_list	*moveset, t_list **moves)
+{
+	t_list		*moveset_cpy;
+	t_move		*move;
+	t_stack		stack;
+	t_action	action;
+
+	moveset_cpy = moveset;
+	while (moveset_cpy)
+	{
+		move = (t_move *) moveset_cpy->content;
+		action = move->action;
+		stack = move->stack;
+		if (stack == STACK_A && action == ACT_ROTATE)
+			rotate_lst(stack_a_markup);
+		if (stack == STACK_A && action == ACT_REVERSE_ROTATE)
+			reverse_rotate_lst(stack_a_markup);
+		if (stack == STACK_B && action == ACT_ROTATE)
+			rotate_lst(stack_b_markup);
+		if (stack == STACK_B && action == ACT_REVERSE_ROTATE)
+			reverse_rotate_lst(stack_b_markup);
+		ft_lstadd_back(moves, ft_lstnew(move_new(stack, action)));
+		moveset_cpy = moveset_cpy->next;
+	}
+}
+
+static void	stack_b_to_stack_a(t_list	**stack_a_markup,
+	t_list **stack_b_markup, t_list **moves)
+{
+	t_list					*best_moveset;
+	t_stack_a_boundaries	*stack_a_boundaries;
+
+	while (ft_lstsize(*stack_b_markup) > 0)
+	{
+		stack_a_boundaries = get_stack_a_boundaries(*stack_a_markup);
+		best_moveset = find_best_moveset(*stack_a_markup, *stack_b_markup,
+				stack_a_boundaries);
+		prepare_both_stack(stack_a_markup, stack_b_markup, best_moveset, moves);
+		push_lst(stack_b_markup, stack_a_markup);
+		ft_lstadd_back(moves, ft_lstnew(move_new(STACK_B,
+					ACT_PUSH)));
+	}
+
+}
+
+static void	align_stack_a_moveset(t_list	**stack_a_markup, int total_size,
+	int smallest_index, t_list **moves)
+{
+	int			move_count;
+	t_action	action;
+
+	move_count = 0;
+	if (smallest_index + 1 <= total_size / 2)
+	{
+		move_count = smallest_index;
+		action = ACT_ROTATE;
+	}
+	else if (smallest_index > 0)
+	{
+		move_count = total_size - smallest_index;
+		action = ACT_REVERSE_ROTATE;
+	}
+	while (move_count > 0)
+	{
+		if (action == ACT_ROTATE)
+			rotate_lst(stack_a_markup);
+		else if (action == ACT_REVERSE_ROTATE)
+			reverse_rotate_lst(stack_a_markup);
+		ft_lstadd_back(moves, ft_lstnew(move_new(STACK_A, action)));
+		move_count--;
+	}
+}
+
+static void	align_stack_a(t_list	**stack_a_markup, t_list **moves)
+{
+	t_list		*stack_a_markup_cpy;
+	int			smallest_index;
+	int			smallest_number;
+	int			i;
+	t_markup	*markup;
+
+	stack_a_markup_cpy = *stack_a_markup;
+	smallest_index = 0;
+	i = 0;
+	smallest_number = ((t_markup *) stack_a_markup_cpy->content)->number;
+	while (stack_a_markup_cpy)
+	{
+		markup = (t_markup *) stack_a_markup_cpy->content;
+		if (markup->number < smallest_number)
+		{
+			smallest_index = i;
+			smallest_number = markup->number;
+		}
+		stack_a_markup_cpy = stack_a_markup_cpy->next;
+		i++;
+	}
+	align_stack_a_moveset(stack_a_markup, ft_lstsize(*stack_a_markup),
+		smallest_index, moves);
+}
+
+static void	simplify_moveset_apply(t_list	**moveset,
+	int *ra_count_ptr, int *rb_count_ptr, t_action action)
+{
+	int	ra_count;
+	int	rb_count;
+	int	rr_count;
+
+	ra_count = *ra_count_ptr;
+	rb_count = *rb_count_ptr;
+	if (ra_count > rb_count)
+	{
+		rr_count = rb_count;
+		ra_count = ra_count - rb_count;
+		rb_count = 0;
+	}
+	else
+	{
+		rr_count = ra_count;
+		rb_count = rb_count - ra_count;
+		ra_count = 0;
+	}
+	apply_moveset(STACK_B, rb_count, action, moveset);
+	apply_moveset(STACK_A, ra_count, action, moveset);
+	apply_moveset(STACK_BOTH, rr_count, action, moveset);
+	*ra_count_ptr = 0;
+	*rb_count_ptr = 0;
+}
+
+static void	simplify_moveset_action(t_list	**moveset, t_action action)
+{
+	t_list	*simplified_moveset;
+	t_list	*moveset_cpy;
+	t_move	*move;
+	int		ra_count;
+	int		rb_count;
+
+	moveset_cpy = *moveset;
+	simplified_moveset = NULL;
+	ra_count = 0;
+	rb_count = 0;
+	while (moveset_cpy)
+	{
+		move = (t_move *) moveset_cpy->content;
+		if (move->action == action && move->stack == STACK_A)
+			ra_count++;
+		else if (move->action == action && move->stack == STACK_B)
+			rb_count++;
+		else
+		{
+			simplify_moveset_apply(&simplified_moveset, &ra_count,
+				&rb_count, action);
+			ft_lstadd_back(&simplified_moveset,
+				ft_lstnew(move_new(move->stack, move->action)));
+		}
+		moveset_cpy = moveset_cpy->next;
+	}
+	simplify_moveset_apply(&simplified_moveset, &ra_count,
+		&rb_count, action);
+	free(*moveset);
+	*moveset = simplified_moveset;
+}
+
+static void	simplify_moveset(t_list	**moveset)
+{
+	simplify_moveset_action(moveset, ACT_ROTATE);
+	simplify_moveset_action(moveset, ACT_REVERSE_ROTATE);
+}
+
+static t_list	*solve(t_list *stack_a_standalone, t_markup_mode markup_mode)
+{
+	t_list		*moves;
+	t_stack_a	*stack_a;
+	t_list		*stack_b_markup;
+
 	stack_b_markup = NULL;
+	stack_a = stack_a_new();
+	stack_a->indexed = get_indexed_list(stack_a_standalone,
+			ft_lstsize(stack_a_standalone));
+	stack_a->markup_head = find_markup_head(stack_a->indexed, markup_mode);
+	stack_a->markup = get_markup(stack_a->indexed, stack_a->markup_head,
+			markup_mode);
+	stack_a_to_stack_b(stack_a, &stack_b_markup, &moves, markup_mode);
+	stack_b_to_stack_a(&stack_a->markup, &stack_b_markup, &moves);
 
-	stack_a_indexed = get_indexed_list(stack_a, ft_lstsize(stack_a));
-	stack_a_markup_head = find_markup_head(stack_a_indexed, MARKUP_BY_INDEX);
-	stack_a_markup = get_markup(stack_a_indexed, stack_a_markup_head, MARKUP_BY_INDEX);
-
-	printf("Using as markup head %d\n", ((t_indexed *) stack_a_markup_head->content)->number);
-
-while (count_markup_keep(stack_a_markup) != ft_lstsize(stack_a_markup))
-	{
-		if (sa_needed(stack_a_indexed, stack_a_markup_head, MARKUP_BY_INDEX))
-		{
-			swap_lst(&stack_a_markup);
-			swap_lst(&stack_a_indexed);
-			printf("sa\n");
-			stack_a_markup = get_markup(stack_a_indexed, stack_a_markup_head, MARKUP_BY_INDEX);
-		}
-		if (((t_markup *)stack_a_markup->content)->keep == 0)
-		{
-			push_lst(&stack_a_markup, &stack_b_markup);
-			push_lst(&stack_a_indexed, &stack_b_indexed);
-			printf("pb\n");
-		}
-		else
-		{
-			rotate_lst(&stack_a_markup);
-			rotate_lst(&stack_a_indexed);
-			printf("ra\n");
-		}
-		//printf("\n");
-		}
+	align_stack_a(&stack_a->markup, &moves);
 
 
-	printf("Stack A BEFORE :\n");
-	ft_lstiter(stack_a_markup, print_content2);
+	(void) print_content3;
+	/*printf("Stack A AFTER :\n");
+	ft_lstiter(stack_a->markup, print_content3);
 	printf("\n");
-	printf("Stack B BEFORE :\n");
-	ft_lstiter(stack_b_markup, print_content2);
+	printf("Stack B AFTER :\n");
+	ft_lstiter(stack_b_markup, print_content3);*/
 
-	printf("Count for bottom : %d\n", count_for_bottom(stack_a->next->next->next->next, stack_a).count);
-	//t_list *smallest = find_smallest(stack_a_indexed);
+	simplify_moveset(&moves);
+	return (moves);
+}
 
-	//printf("Smallest value of stack A is : %d\n", ((t_indexed *) smallest->content)->number);
+static void print_move_stack_both(t_move	*move)
+{
+	if (move->stack != STACK_BOTH)
+		return ;
+	if (move->action == ACT_ROTATE)
+		ft_printf("rr\n");
+	if (move->action == ACT_REVERSE_ROTATE)
+		ft_printf("rrr\n");
+}
 
-	/*while (count_markup_keep(stack_a_markup) != ft_lstsize(stack_a_markup))
+static void print_move_stack_a(t_move	*move)
+{
+	if (move->stack != STACK_A)
+		return ;
+	if (move->action == ACT_PUSH)
+		ft_printf("pb\n");
+	if (move->action == ACT_ROTATE)
+		ft_printf("ra\n");
+	if (move->action == ACT_REVERSE_ROTATE)
+		ft_printf("rra\n");
+	if (move->action == ACT_SWAP)
+		ft_printf("sa\n");
+}
+
+static void print_move_stack_b(t_move	*move)
+{
+	if (move->stack != STACK_B)
+		return ;
+	if (move->action == ACT_PUSH)
+		ft_printf("pa\n");
+	if (move->action == ACT_ROTATE)
+		ft_printf("rb\n");
+	if (move->action == ACT_REVERSE_ROTATE)
+		ft_printf("rrb\n");
+}
+
+static void print_moveset(t_list	*moveset)
+{
+	t_list	*moveset_cpy;
+	t_move	*move;
+
+	moveset_cpy = moveset;
+	while (moveset_cpy)
 	{
-		if (sa_needed(stack_a_indexed, stack_a_markup_head, MARKUP_BY_INDEX))
-		{
-			swap_lst(&stack_a_markup);
-			swap_lst(&stack_a_indexed);
-			printf("sa\n");
-			stack_a_markup = get_markup(stack_a_indexed, stack_a_markup_head, MARKUP_BY_INDEX);
-		}
-		if (((t_markup *)stack_a_markup->content)->keep == 0)
-		{
-			push_lst(&stack_a_markup, &stack_b_markup);
-			push_lst(&stack_a_indexed, &stack_b_indexed);
-			printf("pb\n");
-		}
-		else
-		{
-			rotate_lst(&stack_a_markup);
-			rotate_lst(&stack_a_indexed);
-			printf("ra\n");
-		}
-		//printf("\n");
-		}
+		move = (t_move *) moveset_cpy->content;
+		print_move_stack_a(move);
+		print_move_stack_b(move);
+		print_move_stack_both(move);
+		moveset_cpy = moveset_cpy->next;
+	}
+}
 
-										printf("\nStack A INDEXED:\n");
-		ft_lstiter(stack_a_indexed, print_content);
-		printf("\nStack B INDEXED :\n");
-		ft_lstiter(stack_b_indexed, print_content);
+#include "ft_stdlib.h"
 
-		int z = 0;
-		while (z < 3)
-		{
-					t_list *temp_lst;
-		t_list	*best;
-		int		last_move;
-		t_move	move_sb;
-		t_move	move_sa;
-
-		temp_lst = stack_b_indexed;
-		last_move = 9999;
-		while (temp_lst)
-		{
-			int count = count_sb(temp_lst, stack_b_indexed).count + count_sa(temp_lst, stack_a_indexed).count;
-			if (count < last_move)
-			{
-				best = temp_lst;
-				move_sb = count_sb(temp_lst, stack_b_indexed);
-				move_sa =  count_sa(temp_lst, stack_a_indexed);
-				last_move = count;
-			}
-			temp_lst = temp_lst->next;
-		}
-
-		(void) best;
-
-		//printf("Best one to move is : %d\n", ((t_indexed *) best->content)->number);
-
-		prepare_b(&stack_b_indexed, move_sb);
-		prepare_a(&stack_a_indexed, move_sa);
-
-		push_lst(&stack_b_indexed, &stack_a_indexed);
-
-								printf("\nStack A INDEXED:\n");
-		ft_lstiter(stack_a_indexed, print_content);
-		printf("\nStack B INDEXED :\n");
-		ft_lstiter(stack_b_indexed, print_content);
-		z++;
-		}*/
-	/*while (count_markup_keep(stack_a_markup) != ft_lstsize(stack_a))
-	{
-		ft_lstiter(st ack_a_indexed, print_content);
-		if (((t_markup *)stack_a_markup->content)->keep == 0)
-		{
-			push_lst(&stack_a, &stack_b);
-			stack_a_indexed = get_indexed_list(stack_a, ft_lstsize(stack_a));
-			printf("\n\n");
-			ft_lstiter(stack_a_indexed, print_content2);
-			stack_a_markup = get_markup(stack_a_indexed, stack_a_markup_head, MARKUP_GREATER_THAN);
-		}
-		else
-		{
-			rotate_lst(&stack_a);
-			stack_a_indexed = get_indexed_list(stack_a, ft_lstsize(stack_a));
-			stack_a_markup = get_markup(stack_a_indexed, stack_a_markup_head, MARKUP_GREATER_THAN);
-		}
-	}*/
-
-	(void) stack_b;
-	(void) markup_lst;
-	/*while (count_markup_keep(stack_a_markup) < ft_lstsize(stack_a_markup))
-	{
-		printf("\n\n");
-		ft_lstiter(stack_a, print_content);
-		if (sa_needed(stack_a, stack_a_indexed, stack_a_markup_head, MARKUP_GREATER_THAN))
-		{
-			swap_lst(&stack_a);
-			stack_a_indexed = get_indexed_list(stack_a, ft_lstsize(stack_a));
-			stack_a_markup = get_markup(stack_a_indexed, stack_a_markup_head, MARKUP_GREATER_THAN);
-		}
-		else if (((t_markup*) stack_a_markup->content)->keep == 0)
-		{
-			push_lst(&stack_a, &stack_b);
-			stack_a_indexed = get_indexed_list(stack_a, ft_lstsize(stack_a));
-			stack_a_markup = get_markup(stack_a_indexed, stack_a_markup_head, MARKUP_GREATER_THAN);
-		}
-		else
-		{
-			rotate_lst(&stack_a);
-			stack_a_indexed = get_indexed_list(stack_a, ft_lstsize(stack_a));
-			stack_a_markup = get_markup(stack_a_indexed, stack_a_markup_head, MARKUP_GREATER_THAN);
-		}
-	}*/
-
-	//stack_b = get_indexed_list(stack_a, ft_lstsize(stack_a));
-
-	//markup_head = find_markup_head(stack_b, MARKUP_GREATER_THAN);
-	//printf("Best markup head is %d\n", ((t_indexed *) markup_head->content)->number);
-	//markup_lst = get_markup(stack_b, stack_b,
-	//		MARKUP_BY_INDEX);
-	//ft_lstiter(markup_lst, print_content);
-	//ft_lstiter(stack_a, print_content2);
-	//(void) stack_b;
-	//ft_lstiter(stack_b, print_content);
-
-	/*stack_b = ft_lstcpy(stack_a);
-	ft_lstsort(&stack_b, ft_lstsize(stack_b));
-
-	printf("Lst a content :\n");
-	ft_lstiter(stack_a, print_content);
-
-	printf("Lst b content :\n");
-	ft_lstiter(stack_b, print_content);*/
-
-	/*markup_index_head = get_markup_head(MARKUP_BY_INDEX, indexed_lst, list_size);
-	printf("Markup head by index is %d and kept %d\n", markup_index_head.markup, markup_index_head.kept_amount);
-
-	markup_greater_head = get_markup_head(MARKUP_GREATER_THAN, indexed_lst, list_size);
-	printf("Markup head greater than is %d and kept %d\n", markup_greater_head.markup, markup_greater_head.kept_amount);
+int	main(int argc, char *args[])
+{
 	t_list	*stack_a;
-	t_list	*stack_b;
-	int num_1;
+	t_list	*moves;
+	int		*args_nbr;
+	int		i;
 
-	num_1 = 5;
-	stack_b = NULL;
-	stack_a = ft_lstnew(&num_1);
-	printf("Lst 1 content :\n");
-	ft_lstiter(stack_a, print_content);
-	printf("Lst 2 content :\n");
-	ft_lstiter(stack_b, print_content);
-
-	push_lst(&stack_a, &stack_b);
-	printf("Lst 1 content :\n");
-	ft_lstiter(stack_a, print_content);
-	printf("Lst 2 content :\n");
-	ft_lstiter(stack_b, print_content);
-
-	swap_lst(&lst);*/
+	(void) argc;
+	stack_a = NULL;
+	i = 1;
+	args_nbr = malloc(argc * sizeof(int));
+	while (args[i])
+	{
+		args_nbr[i] = ft_atoi(args[i]);
+		ft_lstadd_back(&stack_a, ft_lstnew(&args_nbr[i]));
+		i++;
+	}
+	moves = solve(stack_a, MARKUP_BY_INDEX);
+	(void) print_content2;
+	(void) moves;
+	(void) print_moveset;
+	print_moveset(moves);
+	///printf("Number of actions: %d\n", ft_lstsize(moves));
 }

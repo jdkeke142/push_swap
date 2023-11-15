@@ -6,27 +6,22 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 16:01:53 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/03/15 18:06:20 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/15 13:34:20 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "indexing.h"
 
-static t_list	*ft_lstcpy(t_list *lst)
+t_list	*ft_lstcpy(t_list	*lst)
 {
-	t_list	*temp_lst;
-	t_list	*lst_cpy;
+	t_list	*new_lst;
 
-	if (!lst)
+	if (lst == NULL)
 		return (NULL);
-	temp_lst = lst;
-	lst_cpy = NULL;
-	while (temp_lst)
-	{
-		ft_lstadd_back(&lst_cpy, ft_lstnew(temp_lst->content));
-		temp_lst = temp_lst->next;
-	}
-	return (lst_cpy);
+	new_lst = malloc(sizeof(t_list));
+	new_lst->content = lst->content;
+	new_lst->next = ft_lstcpy(lst->next);
+	return (new_lst);
 }
 
 static void	ft_lstsort_swap(t_list *elem_1, t_list *elem_2)
