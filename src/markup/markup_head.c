@@ -6,11 +6,12 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 18:04:31 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 13:36:50 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/18 16:35:59 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "markup.h"
+#include "markup_head.h"
 
 int	count_markup_keep(t_list *markup_lst)
 {
@@ -29,13 +30,6 @@ int	count_markup_keep(t_list *markup_lst)
 	}
 	return (keep_count);
 }
-
-typedef struct s_markup_kept
-{
-	int	kept_count;
-	int	number;
-	int	index;
-}				t_markup_kept;
 
 int	find_markup_head(t_list *indexed_lst, t_markup_mode markup_mode)
 {

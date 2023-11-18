@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 19:02:17 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 14:56:24 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/18 16:36:21 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 #include "ft_list.h"
 #include "move.h"
 #include "stack.h"
-//TO BE REMOVED
-#include <stdio.h>
 
 static int	sa_needed(t_stack_a *stack_a, t_markup_mode mode)
 {

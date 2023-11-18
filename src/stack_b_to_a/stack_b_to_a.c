@@ -6,15 +6,13 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 19:37:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 14:10:18 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/18 16:36:57 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "stack.h"
 #include "move.h"
 #include "actions.h"
-//TO BE REMOVED
-#include <stdio.h>
 
 int	get_markup_index(t_list *stack_markup, t_markup *markup)
 {

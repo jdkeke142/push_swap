@@ -6,13 +6,11 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:46:55 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 13:55:18 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/18 16:36:45 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "markup.h"
-//TO BE REMOVED
-#include <stdio.h>
 
 static void	get_markup_add(t_indexed *indexed, t_indexed **last_kept,
 	t_list *markup_lst, t_markup_mode markup_mode)

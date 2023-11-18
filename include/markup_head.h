@@ -1,25 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   markup.c                                           :+:      :+:    :+:   */
+/*   markup_head.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/17 19:49:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 16:34:57 by kjimenez         ###   ########.fr       */
+/*   Created: 2023/11/18 16:35:21 by kjimenez          #+#    #+#             */
+/*   Updated: 2023/11/18 16:36:00 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "markup.h"
+#ifndef MARKUP_HEAD_H
+# define MARKUP_HEAD_H
 
-t_markup	*markup_new(int number, int keep)
+typedef struct s_markup_kept
 {
-	t_markup	*markup;
+	int	kept_count;
+	int	number;
+	int	index;
+}				t_markup_kept;
 
-	markup = malloc(sizeof(t_markup));
-	if (!markup)
-		return (NULL);
-	markup->number = number;
-	markup->keep = keep;
-	return (markup);
-}
+#endif
