@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:16:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 15:03:52 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/18 15:57:12 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ static t_list	*solve(int *numbers, int numbers_count,
 	t_markup_mode markup_mode)
 {
 	t_list		*moves;
-	t_list		*simplified_moves;
 	t_stack_a	*stack_a;
 	t_list		*stack_b_markup;
 
@@ -65,9 +64,8 @@ static t_list	*solve(int *numbers, int numbers_count,
 	ft_lstdestroy(stack_a->indexed, &free);
 	ft_lstdestroy(stack_b_markup, &free);
 	free(stack_a);
-	simplified_moves = get_simplified_moveset(moves);
-	ft_lstdestroy(moves, &free);
-	return (simplified_moves);
+	simplify_moveset(&moves);
+	return (moves);
 }
 
 int	main(int argc, char *args[])
