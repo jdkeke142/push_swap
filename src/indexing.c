@@ -6,100 +6,89 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 16:01:53 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/15 13:34:20 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/18 14:29:13 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "indexing.h"
+#include "ft_string.h"
 
-t_list	*ft_lstcpy(t_list	*lst)
+static void	swap(int *i, int *j)
 {
-	t_list	*new_lst;
+	int	tmp;
 
-	if (lst == NULL)
-		return (NULL);
-	new_lst = malloc(sizeof(t_list));
-	new_lst->content = lst->content;
-	new_lst->next = ft_lstcpy(lst->next);
-	return (new_lst);
+	tmp = *i;
+	*i = *j;
+	*j = tmp;
 }
 
-static void	ft_lstsort_swap(t_list *elem_1, t_list *elem_2)
+static void	sort(int *numbers, int numbers_count)
 {
-	void	*temp;
+	int	i;
+	int	j;
+	int	min_idx;
 
-	temp = elem_1->content;
-	elem_1->content = elem_2->content;
-	elem_2->content = temp;
-}
-
-static void	ft_lstsort(t_list **lst, int lst_size)
-{
-	int		i;
-	int		j;
-	t_list	*elem;
-	t_list	*next_elem;
-	t_list	*temp_lst;
-
-	temp_lst = *lst;
 	i = 0;
-	while (i <= lst_size)
+	while (i < numbers_count - 1)
 	{
-		temp_lst = *lst;
-		j = 0;
-		while (j < lst_size - 1)
+		min_idx = i;
+		j = i + 1;
+		while (j < numbers_count)
 		{
-			elem = temp_lst;
-			next_elem = elem->next;
-			if (*((int *)elem->content) > *((int *)next_elem->content))
-				ft_lstsort_swap(elem, next_elem);
-			temp_lst = next_elem;
+			if (numbers[j] < numbers[min_idx])
+				min_idx = j;
 			j++;
 		}
+		swap(&numbers[min_idx], &numbers[i]);
 		i++;
 	}
 }
 
-static int	ft_lstfind_num(t_list *lst, int number)
+static int	*get_sorted_numbers(int *numbers, int numbers_count)
 {
-	t_list	*lst_cpy;
-	int		number_found;
+	int				*sorted_numbers;
+	unsigned long	size;
+
+	size = numbers_count * sizeof(int);
+	sorted_numbers = malloc(size);
+	ft_memcpy(sorted_numbers, numbers, size);
+	sort(sorted_numbers, numbers_count);
+	return (sorted_numbers);
+}
+
+static int	get_number_index(int number, int *sorted_numbers, int numbers_count)
+{
 	int		i;
 
-	lst_cpy = lst;
 	i = 0;
-	while (lst_cpy)
+	while (i < numbers_count)
 	{
-		number_found = *((int *) lst_cpy->content);
-		if (number_found == number)
+		if (sorted_numbers[i] == number)
 			return (i);
-		lst_cpy = lst_cpy->next;
 		i++;
 	}
 	return (-1);
 }
 
-t_list	*get_indexed_list(t_list *lst, int lst_size)
+t_list	*get_indexed_list(int *numbers, int numbers_count)
 {
-	t_list		*lst_cpy;
+	int			i;
 	t_list		*indexed_lst;
-	t_list		*sorted_lst;
+	int			*sorted_numbers;
 	t_indexed	*indexed_num;
-	int			number;
 
-	indexed_lst = NULL;
-	lst_cpy = lst;
-	sorted_lst = ft_lstcpy(lst);
-	ft_lstsort(&sorted_lst, lst_size);
-	while (lst_cpy)
+	indexed_lst = ft_lstnew();
+	sorted_numbers = get_sorted_numbers(numbers, numbers_count);
+	i = 0;
+	while (i < numbers_count)
 	{
-		number = *((int *) lst_cpy->content);
 		indexed_num = malloc(sizeof(t_indexed));
-		indexed_num->number = number;
-		indexed_num->index = ft_lstfind_num(sorted_lst, number);
-		ft_lstadd_back(&indexed_lst, ft_lstnew(indexed_num));
-		lst_cpy = lst_cpy->next;
+		indexed_num->number = numbers[i];
+		indexed_num->index = get_number_index(numbers[i],
+				sorted_numbers, numbers_count);
+		ft_lstadd_back(indexed_lst, indexed_num);
+		i++;
 	}
-	ft_lstclear(&sorted_lst, NULL);
+	free(sorted_numbers);
 	return (indexed_lst);
 }

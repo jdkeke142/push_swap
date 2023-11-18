@@ -1,26 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   actions.h                                          :+:      :+:    :+:   */
+/*   multiple_actions.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/06 17:23:26 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/16 22:46:37 by kjimenez         ###   ########.fr       */
+/*   Created: 2023/11/16 22:44:12 by kjimenez          #+#    #+#             */
+/*   Updated: 2023/11/16 22:44:51 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ACTIONS_H
-# define ACTIONS_H
+#include "ft_list.h"
+#include "actions.h"
 
-# include "ft_list.h"
+void	rotate_lst_multiple(t_list *lst, int count)
+{
+	int	i;
 
-void	swap_lst(t_list *lst);
-void	push_lst(t_list *lst_src, t_list *lst_dest);
-void	rotate_lst(t_list *lst);
-void	reverse_rotate_lst(t_list *lst);
-void	rotate_lst_multiple(t_list *lst, int count);
-void	reverse_rotate_lst_multiple(t_list *lst, int count);
+	i = 0;
+	while (i < count)
+	{
+		rotate_lst(lst);
+		i++;
+	}
+}
 
-#endif
+void	reverse_rotate_lst_multiple(t_list *lst, int count)
+{
+	int	i;
 
+	i = 0;
+	while (i < count)
+	{
+		reverse_rotate_lst(lst);
+		i++;
+	}
+}
