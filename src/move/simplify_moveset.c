@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 19:33:03 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 16:30:45 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/18 16:38:52 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ static void	simplify_moveset_apply(t_list	*moveset,
 	*ra_count_ptr = 0;
 	*rb_count_ptr = 0;
 }
-
 
 static int	simplify_moveset_increment(t_action action, t_move *move,
 	int *ra_count, int *rb_count)
