@@ -6,7 +6,7 @@
 #    By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 15:13:41 by kjimenez          #+#    #+#              #
-#    Updated: 2023/11/18 14:36:35 by kjimenez         ###   ########.fr        #
+#    Updated: 2023/11/18 18:46:33 by kjimenez         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ NAME		:= $(DIR_BIN)/push_swap
 SRC			:= push_swap.c indexing.c markup.c markup_head.c single_actions.c \
 				multiple_actions.c move.c print_moveset.c simplify_moveset.c stack_b_to_a.c \
 				stack_a_align.c stack_a.c stack_a_to_b.c stack_boundaries.c \
-				markup_builder.c
+				markup_builder.c parsing.c
 OBJ			:= $(addprefix $(DIR_OBJ)/,$(SRC:c=o))
 
 LIBS_PATH	:= libs
@@ -26,7 +26,7 @@ LIBFT_PATH	:= $(LIBS_PATH)/libft
 
 CC			:= clang
 CFLAGS		:= -Wall -Wextra -Werror -I$(LIBFT_PATH)/include -Iinclude -g
-LDFLAGS		:= -L$(LIBFT_PATH)/bin -lft_list -lft_stdlib -lft_stdio -lft_string -g
+LDFLAGS		:= -L$(LIBFT_PATH)/bin -lft_list -lft_stdlib -lft_stdio -lft_string -lft_ctype -g
 
 GIT			:= git
 

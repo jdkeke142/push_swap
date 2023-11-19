@@ -6,13 +6,14 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:16:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 16:38:33 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/18 18:55:35 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_stdlib.h"
 #include "move.h"
 #include "stack.h"
+#include "parsing.h"
+#include "ft_stdio.h"
 
 static t_list	*solve(int *numbers, int numbers_count,
 	t_markup_mode markup_mode)
@@ -44,17 +45,18 @@ int	main(int argc, char *args[])
 	t_list		*moves_by_index;
 	t_list		*moves_greater_than;
 	int			*numbers;
-	int			i;
+	int			numbers_count;
 
-	i = 1;
-	numbers = malloc(argc * sizeof(int));
-	while (args[i])
+	(void) argc;
+	numbers_count = 0;
+	numbers = parse(args, &numbers_count);
+	if (numbers == NULL)
 	{
-		numbers[i - 1] = ft_atoi(args[i]);
-		i++;
+		ft_printf("Error\n");
+		return (0);
 	}
-	moves_by_index = solve(numbers, argc - 1, MARKUP_BY_INDEX);
-	moves_greater_than = solve(numbers, argc - 1, MARKUP_GREATER_THAN);
+	moves_by_index = solve(numbers, numbers_count, MARKUP_BY_INDEX);
+	moves_greater_than = solve(numbers, numbers_count, MARKUP_GREATER_THAN);
 	if (moves_by_index->size < moves_greater_than->size)
 		print_moveset(moves_by_index);
 	else
