@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 19:23:59 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 15:44:20 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/19 15:34:51 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ void	align_stack_a(t_list	*stack_a_markup, t_list *moves)
 	stack_a_markup_cpy = stack_a_markup->first;
 	smallest_index = 0;
 	i = 0;
+	if (stack_a_markup->size < 1)
+		return ;
 	smallest_number = ((t_markup *) ft_lstfirst(stack_a_markup))->number;
 	while (stack_a_markup_cpy)
 	{

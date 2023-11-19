@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:16:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 18:55:35 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/19 15:10:17 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	main(int argc, char *args[])
 	numbers = parse(args, &numbers_count);
 	if (numbers == NULL)
 	{
-		ft_printf("Error\n");
+		ft_putstr_fd("Error\n", 2);
 		return (0);
 	}
 	moves_by_index = solve(numbers, numbers_count, MARKUP_BY_INDEX);
