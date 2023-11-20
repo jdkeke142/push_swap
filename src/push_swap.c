@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 15:16:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/19 15:10:17 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/20 20:04:56 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ static t_list	*solve(int *numbers, int numbers_count,
 	ft_lstdestroy(stack_a->indexed, &free);
 	ft_lstdestroy(stack_b_markup, &free);
 	free(stack_a);
-	simplify_moveset(&moves);
 	return (moves);
 }
 

@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 19:05:22 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/18 15:56:29 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/20 19:23:11 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ typedef struct s_move
 
 t_move	*move_new(t_stack stack, t_action action);
 void	print_moveset(t_list	*moveset);
-void	simplify_moveset(t_list	**moveset);
 void	apply_moveset(t_stack stack, int count, t_action action,
 			t_list *moveset);
 

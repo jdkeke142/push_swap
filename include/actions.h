@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 17:23:26 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/16 22:46:37 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/20 19:30:19 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ void	swap_lst(t_list *lst);
 void	push_lst(t_list *lst_src, t_list *lst_dest);
 void	rotate_lst(t_list *lst);
 void	reverse_rotate_lst(t_list *lst);
-void	rotate_lst_multiple(t_list *lst, int count);
-void	reverse_rotate_lst_multiple(t_list *lst, int count);
+void	rotate_lsts(t_list *lst, t_list *lst_2);
+void	reverse_rotate_lsts(t_list *lst, t_list *lst_2);
 
 #endif
 
