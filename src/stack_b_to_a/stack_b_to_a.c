@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 19:37:42 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/21 12:49:59 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/21 12:52:00 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "actions.h"
 #include "stack_b_to_a_utils.h"
 
-t_markup	*stack_markup_to_array(t_list *stack_markup)
+static t_markup	*stack_markup_to_array(t_list *stack_markup)
 {
 	int			i;
 	t_list_node	*stack_markup_cpy;
