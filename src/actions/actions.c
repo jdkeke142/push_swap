@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 22:43:58 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/20 19:27:59 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/21 17:06:00 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,10 @@ void	push_lst(t_list *lst_src, t_list *lst_dest)
 	if (first_content == NULL)
 		return ;
 	ft_lstadd_front(lst_dest, first_content);
+}
+
+void	swap_lsts(t_list *lst, t_list *lst_2)
+{
+	swap_lst(lst);
+	swap_lst(lst_2);
 }
