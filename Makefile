@@ -6,7 +6,7 @@
 #    By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/27 15:13:41 by kjimenez          #+#    #+#              #
-#    Updated: 2023/11/20 19:34:57 by kjimenez         ###   ########.fr        #
+#    Updated: 2023/11/21 12:48:40 by kjimenez         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,8 @@ DIR_OBJ		:= build
 NAME		:= $(DIR_BIN)/push_swap
 
 SRC			:= push_swap.c indexing.c markup.c markup_head.c actions.c actions_rotate.c \
-				move.c print_moveset.c stack_b_to_a.c stack_a_align.c \
-				stack_a.c stack_a_to_b.c stack_boundaries.c \
+				move.c print_moveset.c stack_b_to_a.c stack_a_align.c prepare_stack_a.c\
+				stack_a.c stack_a_to_b.c stack_boundaries.c moveset.c prepare_stack_b.c \
 				markup_builder.c parsing_utils.c parsing.c
 OBJ			:= $(addprefix $(DIR_OBJ)/,$(SRC:c=o))
 
