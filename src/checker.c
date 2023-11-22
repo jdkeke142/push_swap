@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 14:43:03 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/21 20:39:46 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/22 14:05:36 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,6 @@
 #include "indexing.h"
 #include "ft_string.h"
 #include "actions.h"
-
-/*static void	print_content3(void *content)
-{
-	t_indexed	*indexed;
-
-	indexed = (t_indexed *) content;
-	ft_printf("Number is : %d\n", indexed->number);
-}*/
 
 static int	is_sorted(t_list *stack_a)
 {
