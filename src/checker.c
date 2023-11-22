@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 14:43:03 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/22 14:13:41 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/22 14:15:21 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ int	main(int argc, char *args[])
 	int			*numbers;
 	int			numbers_count;
 
-	if (argc == 1)
+	if (argc < 2)
 		return (0);
 	numbers_count = 0;
 	numbers = parse(args, &numbers_count);
