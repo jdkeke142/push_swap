@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 14:43:03 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/22 14:05:36 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/22 14:13:41 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,7 @@ static int	checker_action(char *line, t_list *stack_a, t_list *stack_b)
 	else if (ft_strcmp("rrr\n", line) == 0)
 		reverse_rotate_lsts(stack_a, stack_b);
 	else
-	{
-		ft_printf("Error found : %s\n", line);
 		return (0);
-	}
 	return (1);
 }
 
@@ -100,7 +97,8 @@ int	main(int argc, char *args[])
 	int			*numbers;
 	int			numbers_count;
 
-	(void) argc;
+	if (argc == 1)
+		return (0);
 	numbers_count = 0;
 	numbers = parse(args, &numbers_count);
 	if (numbers == NULL)
