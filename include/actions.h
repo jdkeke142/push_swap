@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 17:23:26 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/21 17:04:35 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/27 17:59:20 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,4 +24,3 @@ void	reverse_rotate_lsts(t_list *lst, t_list *lst_2);
 void	swap_lsts(t_list *lst, t_list *lst_2);
 
 #endif
-
