@@ -6,7 +6,7 @@
 /*   By: kjimenez <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 14:43:03 by kjimenez          #+#    #+#             */
-/*   Updated: 2023/11/22 14:15:21 by kjimenez         ###   ########.fr       */
+/*   Updated: 2023/11/27 17:51:52 by kjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,14 @@ static int	checker_action(char *line, t_list *stack_a, t_list *stack_b)
 	return (1);
 }
 
+static void	checker_error(char *line, t_list *stack_a, t_list *stack_b)
+{
+	ft_putstr_fd("Error\n", 2);
+	free(line);
+	ft_lstdestroy(stack_a, &free);
+	ft_lstdestroy(stack_b, &free);
+}
+
 static void	checker(int *numbers, int numbers_count)
 {
 	t_list	*stack_a;
@@ -77,8 +85,7 @@ static void	checker(int *numbers, int numbers_count)
 	{
 		if (!checker_action(line, stack_a, stack_b))
 		{
-			ft_putstr_fd("Error\n", 2);
-			free(line);
+			checker_error(line, stack_a, stack_b);
 			return ;
 		}
 		free(line);
